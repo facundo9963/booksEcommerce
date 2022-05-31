@@ -1,15 +1,11 @@
 require("dotenv").config();
 const jwt = require("jsonwebtoken");
-const { hashSync, compareSync } = require("bcrypt")
+const { hashSync, compareSync } = require("bcrypt");
 const { JWT_SECRET } = process.env;
 const prisma = require("../client");
 
 const createUser = async (req, res, next) => {
   const { name, email, password } = req.body;
-  console.log(JWT_SECRET);
-  console.log(name);
-  console.log(email);
-  console.log(password);
 
   if (!name || !email || !password) {
     return next({ status: 400, message: "All fields are required" });
@@ -28,24 +24,15 @@ const createUser = async (req, res, next) => {
       data: {
         name,
         email,
-        password:hashPassword,
+        password: hashPassword,
       },
     });
 
-    console.log(user);
-
-    // generamos el payload/body para generar el token
-    const payload = {
-      user: {
-        id: user.id,
-      },
-    };
-
     jwt.sign(
-      payload,
+      { id: user.id },
       JWT_SECRET,
       {
-        expiresIn: "2d",
+        expiresIn: "10h",
       },
       (err, token) => {
         if (err) throw err;
@@ -59,55 +46,71 @@ const createUser = async (req, res, next) => {
 };
 
 const login = async (req, res, next) => {
-    // Si no hay errores, continúo
-    const { email, password } = req.body
-    console.log(email, password)
-  
-    if (!email || !password) {
-      return next({
-        status: 400,
-        message: "All fields are required",
-      })
-    }
-  
-    try {
-      let user = await prisma.user.findUnique({ where: { email } })
-  
-      // ningún usuario contiene ese correo
-      if (!user) return next({ status: 400, message: "Invalid credentials" })
-  
-      console.log(user.password)
-      // Teniedo el usuario, determinamos si la contraseña enviada es correcta
-      const isMatch = compareSync(password, user.password)
-      console.log(compareSync(password, user.password))
-  
-      // si la contraseña es incorreta
-      if (!isMatch) return next({ status: 400, message: "Invalid credentials" })
-  
-      // si la contraseña y email son validos escribimos el payload/body
-      const payload = {
-        user: { id: user.id },
-      }
-  
-      // GENERO EL TOKEN
-      jwt.sign(
-        payload,
-        JWT_SECRET,
-        {
-          expiresIn: "3d",
-        },
-        (err, token) => {
-          if (err) throw err
-          return res.json({ token })
-        },
-      )
-    } catch (err) {
-      // console.log(err)
-      next(err)
-    }
+  // Si no hay errores, continúo
+  const { email, password } = req.body;
+  console.log(email, password);
+
+  if (!email || !password) {
+    return next({
+      status: 400,
+      message: "All fields are required",
+    });
   }
+
+  try {
+    let user = await prisma.user.findUnique({ where: { email } });
+
+    // ningún usuario contiene ese correo
+    if (!user) return next({ status: 400, message: "Invalid credentials" });
+
+    // Teniedo el usuario, determinamos si la contraseña enviada es correcta
+    const isMatch = compareSync(password, user.password);
+
+    // si la contraseña es incorreta
+    if (!isMatch) return next({ status: 400, message: "Invalid credentials" });
+
+    // si la contraseña y email son validos escribimos el payload/body
+
+    // GENERO EL TOKEN
+    jwt.sign(
+      { id: user.id },
+      JWT_SECRET,
+      {
+        expiresIn: "3d",
+      },
+      (err, token) => {
+        if (err) throw err;
+        return res.json({ token });
+      }
+    );
+  } catch (err) {
+    // console.log(err)
+    next(err);
+  }
+};
+
+const addProfileData = async (req, res, next) => {
+  const { direction, image } = req.body;
+
+  const newInfo = {};
+
+  if (direction) newInfo.direction = direction;
+  if (image) newInfo.image = image;
+  console.log(req.user);
+
+  try {
+    await prisma.user
+      .update({ where: { id: req.user.id }, data: newInfo })
+      .then(() => {
+        res.send("Update successful");
+      });
+  } catch (error) {
+    next(error);
+  }
+};
 
 module.exports = {
   createUser,
-  login
+  login,
+  addProfileData,
 };
