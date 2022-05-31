@@ -53,7 +53,22 @@ const updateStock = async (req, res, next) => {
   }
 };
 
+const getProducts = async (req, res, next) => {
+  
+    try {
+      const allProducts = await prisma.product.findMany({
+          include: {
+        detail: true, // Return all fields
+      }});
+      res.status(200).json(allProducts)
+    } catch (err) {
+      console.log(err);
+      next();
+    }
+  };
+
 module.exports = {
   addProduct,
   updateStock,
+  getProducts
 };
