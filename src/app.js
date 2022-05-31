@@ -2,11 +2,11 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
-//const routes = require('./routes/index.js');
-const { PrismaClient } = require("@prisma/client");
+const routes = require("./routes/index.js");
+
 
 const server = express();
-const prisma = new PrismaClient();
+
 
 server.name = "API";
 
@@ -25,7 +25,7 @@ server.use((req, res, next) => {
   next();
 });
 
-//server.use('/', routes);
+server.use("/", routes);
 
 // Error catching endware.
 server.use((err, req, res, next) => {
@@ -35,4 +35,4 @@ server.use((err, req, res, next) => {
   res.status(status).send(message);
 });
 
-module.exports = { server, prisma };
+module.exports = { server };

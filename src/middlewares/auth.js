@@ -1,0 +1,35 @@
+const jwt = require("jsonwebtoken")
+const { JWT_SECRET } = process.env
+const { prisma } = require("../app.js")
+
+module.exports = async (req, res, next) => {
+  // el token viene en el header de la petición, lo tomamos:
+  const token = req.header("Authorization")
+
+  // Si no nos han proporcionado un token lanzamos un error
+  if (!token) {
+    return next({ status: 403, message: "Token not found" })
+  }
+
+  if (
+    typeof token !== "undefined" &&
+    token.toLowerCase().startsWith("bearer")
+  ) {
+    try {
+    const tokenValidate = token.split(" ")[1]
+    req.token = tokenValidate
+      const decoded = jwt.verify(tokenValidate, JWT_SECRET)
+
+      let user = await prisma.user.findUnique(decoded.user.id)
+
+      // ningún usuario contiene ese correo
+      if (!user) return next({ status: 400, message: "Invalid credentials" })
+
+      next()
+    } catch (error) {
+      res.sendStatus(403)
+    }
+  } else {
+    res.sendStatus(403)
+  }
+}
