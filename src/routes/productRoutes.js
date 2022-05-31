@@ -1,9 +1,9 @@
 const { Router } = require("express")
-const {addProduct} = require("../controllers/productController")
-const auth = require("../middlewares/auth")
+const {addProduct, updateStock} = require("../controllers/productController")
 const router = Router()
 
 router.post("/add", addProduct)
+router.put("/changeStock", updateStock)
 
 
 module.exports = router

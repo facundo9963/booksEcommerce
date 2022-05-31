@@ -31,6 +31,29 @@ const addProduct = async (req, res, next) => {
   }
 };
 
+const updateStock = async (req, res, next) => {
+  const { id, stock } = req.body;
+
+  if (!id || !stock) {
+    return next({ status: 400, message: "All fields are required" });
+  }
+  try {
+    const updateProduct = await prisma.product.update({
+      where: {
+        id,
+      },
+      data: {
+        stock,
+      },
+    });
+    res.status(200).json(updateProduct)
+  } catch (err) {
+    console.log(err);
+    next({});
+  }
+};
+
 module.exports = {
   addProduct,
+  updateStock,
 };
