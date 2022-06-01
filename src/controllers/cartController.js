@@ -70,8 +70,7 @@ const buyCart = async (req, res, next) => {
     console.log(allProducts);
 
     allProducts.cart.map(async (product) => {
-      if (product.product.stock > 1) {
-        console.log("entro al bucle");
+      if (product.product.stock > 0) {
         return await prisma.product.update({
           where: {
             id: product.productId,
