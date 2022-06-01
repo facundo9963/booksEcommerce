@@ -33,8 +33,8 @@ const addProduct = async (req, res, next) => {
 
 const updateStock = async (req, res, next) => {
   const { id, stock } = req.body;
-
-  if (!id || !stock) {
+  console.log(stock)
+  if (!id || typeof stock == "undefined") {
     return next({ status: 400, message: "All fields are required" });
   }
   try {
@@ -49,7 +49,7 @@ const updateStock = async (req, res, next) => {
     res.status(200).json(updateProduct)
   } catch (err) {
     console.log(err);
-    next({});
+    res.status(404).json(err);
   }
 };
 
