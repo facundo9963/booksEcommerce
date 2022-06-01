@@ -17,7 +17,7 @@ model User {
   password  String
   direction String?
   image     String?
-  cart      Cart?
+  cart      ProductsOnCarts[]
 }
 
 model Category {
@@ -46,20 +46,13 @@ model productDetail {
   productId Int     @unique
 }
 
-model Cart {
-  id      Int       @id @default(autoincrement())
-  content ProductsOnCarts[]
-  user    User      @relation(fields: [userId], references: [id])
-  userId  Int       @unique
-}
 
 model ProductsOnCarts {
     id Int       @id @default(autoincrement())
-    cart Cart     @relation(fields: [cartId], references: [id])
+    cart User     @relation(fields: [cartId], references: [id])
     cartId Int
     product Product  @relation(fields: [productId], references: [id])
     productId Int
-    amount Int
 }
 
 model Purchase {
