@@ -1,7 +1,6 @@
-
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = process.env;
-const  prisma  = require("../client");
+const prisma = require("../client");
 
 module.exports = async (req, res, next) => {
   // el token viene en el header de la petición, lo tomamos:
@@ -14,20 +13,17 @@ module.exports = async (req, res, next) => {
 
   if (typeof token !== "undefined") {
     try {
-      //const tokenValidate = token.split(" ")[1];
+      const tokenValidate = token.split(" ")[1];
 
-      //req.token = tokenValidate;
-      //console.log(tokenValidate)
-      //console.log(JWT_SECRET)
-      //const decoded =  jwt.verify(tokenValidate, JWT_SECRET );
-      //console.log(decoded)
-    
+      req.token = tokenValidate;
+
+      const decoded = jwt.verify(tokenValidate, JWT_SECRET);
 
       let user = await prisma.user.findUnique({
         where: {
-          id: 11,
+          id: decoded.id,
         },
-      })
+      });
 
       // ningún usuario contiene ese correo
       if (!user) return next({ status: 400, message: "Invalid credentials" });
@@ -36,7 +32,7 @@ module.exports = async (req, res, next) => {
 
       next();
     } catch (error) {
-      res.sendStatus(406);
+      res.status(403).json(error);
     }
   } else {
     res.sendStatus(403);
