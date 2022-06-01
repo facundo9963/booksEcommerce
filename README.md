@@ -58,3 +58,9 @@ Necesita autenticarse con el token que se devuelve al registrarse o loguearse ya
 Esta ruta sirve para comprar el carrito del usuario. Vacía el carrito y disminuye el stock de los productos. Es de tipo PUT.
 Necesita autenticarse con el token que se devuelve al registrarse o loguearse ya que es una funcionalidad solo para usuarios. El Token es de tipo Bearer y debe ser enviado en el header Authorization en la petición.
 
+## **/purchases**
+
+#### /add
+Esta ruta sirve para que los dueños de aplicación puedan registrar una compra que hayan hecho y asi se guarde en la base de datos y se actualice el stock del producto comprado. Es de tipo POST y recibe obligatoriamente los campos 
+productId: INT, distributor: STRING, stock: INT.
+
