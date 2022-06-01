@@ -4,7 +4,7 @@ const prisma = require("../client");
 const addProduct = async (req, res, next) => {
   const { title, price, stock, categoryId, isbn, author, editorial } = req.body;
 
-  if (!title || !price || !stock || !categoryId) {
+  if (!title || !price || !stock ) {
     return next({ status: 400, message: "All fields are required" });
   }
   try {
