@@ -99,11 +99,14 @@ const addProfileData = async (req, res, next) => {
   console.log(req.user);
 
   try {
-    await prisma.user
-      .update({ where: { id: req.user.id }, data: newInfo })
-      .then(() => {
-        res.send("Update successful");
-      });
+    const userUpdated = await prisma.user.update({
+      where: { id: req.user.id },
+      data: newInfo,
+    });
+
+    delete userUpdated.password;
+
+    res.status(200).json({ message: "user updated", userUpdated });
   } catch (error) {
     next(error);
   }

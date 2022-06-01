@@ -11,9 +11,9 @@ datasource db {
 }
 
 model User {
-  id        Int    @id @default(autoincrement())
+  id        Int               @id @default(autoincrement())
   name      String
-  email     String @unique
+  email     String            @unique
   password  String
   direction String?
   image     String?
@@ -27,13 +27,13 @@ model Category {
 }
 
 model Product {
-  id         Int            @id @default(autoincrement())
+  id         Int               @id @default(autoincrement())
   title      String
   price      Float
   stock      Int
   carts      ProductsOnCarts[]
   purchase   Purchase[]
-  category   Category       @relation(fields: [categoryId], references: [id])
+  category   Category          @relation(fields: [categoryId], references: [id])
   categoryId Int
   detail     productDetail?
 }
@@ -46,13 +46,12 @@ model productDetail {
   productId Int     @unique
 }
 
-
 model ProductsOnCarts {
-    id Int       @id @default(autoincrement())
-    cart User     @relation(fields: [cartId], references: [id])
-    cartId Int
-    product Product  @relation(fields: [productId], references: [id])
-    productId Int
+  id        Int     @id @default(autoincrement())
+  cart      User    @relation(fields: [cartId], references: [id])
+  cartId    Int
+  product   Product @relation(fields: [productId], references: [id])
+  productId Int
 }
 
 model Purchase {
