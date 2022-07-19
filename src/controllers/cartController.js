@@ -53,7 +53,7 @@ const getProducts = async (req, res, next) => {
 
 const buyCart = async (req, res, next) => {
   try {
-    const allProducts = await prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         id: req.user.id,
       },
@@ -67,9 +67,12 @@ const buyCart = async (req, res, next) => {
         },
       },
     });
-    console.log(allProducts);
+    console.log(user);
+    console.log(user.cart);
 
-    allProducts.cart.map(async (product) => {
+
+    user.cart.map(async (product) => {
+      console.log(product)
       if (product.product.stock > 0) {
         return await prisma.product.update({
           where: {

@@ -1,4 +1,5 @@
 
+const { user } = require("../client");
 const prisma = require("../client");
 
 const addCategory = async (req, res, next) => {
@@ -10,10 +11,14 @@ const addCategory = async (req, res, next) => {
       }
   try {
 
-    let category = await prisma.category.create({
-      data: {
-        name
+    let category = await prisma.category.upsert({
+      where: {
+        name:name
       },
+      update:{},
+      create:{
+        name:name
+      }
     });
     console.log(category)
     res.sendStatus(200)
